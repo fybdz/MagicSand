@@ -71,6 +71,21 @@ void ofApp::update() {
 	zedDepth.update();
 	zedHeightMap.update(zedDepth);
 	kinectProjector->update();
+	if (kinectProjector->GetApplicationState() ==
+		KinectProjector::APPLICATION_STATE_RUNNING)
+	{
+		if (!pillarWarningStarted)
+		{
+			pillarWarning.restart();
+			pillarWarningStarted = true;
+		}
+
+		pillarWarning.update(zedDepth, *kinectProjector);
+	}
+	else
+	{
+		pillarWarningStarted = false;
+	}
 	if (!freezeDepth)
 	{
 		sandSurfaceRenderer->update();
@@ -152,23 +167,45 @@ void ofApp::draw()
 			405
 		);
 	}
+	if (kinectProjector->GetApplicationState() ==
+		KinectProjector::APPLICATION_STATE_RUNNING)
+	{
+		pillarWarning.drawDebug(20, 20, 640, 360);
+	}
 }
 
-void ofApp::drawProjWindow(ofEventArgs &args) 
+void ofApp::drawProjWindow(ofEventArgs& args)
 {
-	
-
-	if (kinectProjector->GetApplicationState() == KinectProjector::APPLICATION_STATE_RUNNING)
+	if (kinectProjector->GetApplicationState() ==
+		KinectProjector::APPLICATION_STATE_RUNNING)
 	{
 		sandSurfaceRenderer->drawProjectorWindow();
 		mapGameController.drawProjectorWindow();
 		boidGameController.drawProjectorWindow();
 	}
+
 	kinectProjector->drawProjectorWindow();
+
+	
+	if (kinectProjector->GetApplicationState() ==
+		KinectProjector::APPLICATION_STATE_RUNNING)
+	{
+		pillarWarning.drawProjector(*kinectProjector);
+	}
 }
 
 void ofApp::keyPressed(int key) 
 {
+	if (key == OF_KEY_F6)
+	{
+		if (kinectProjector->GetApplicationState() ==
+			KinectProjector::APPLICATION_STATE_RUNNING)
+		{
+			pillarWarning.restart();
+		}
+
+		return;
+	}
 	if (key == OF_KEY_F8)
 	{
 		freezeDepth = !freezeDepth;

@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #include "Games/BoidGameController.h"
 #include "StereoDepth/ZedDepthGrabber.h"
 #include "StereoDepth/ZedHeightMap.h"
+#include "PillarWarning.h"
 
 class ofApp : public ofBaseApp {
 
@@ -64,6 +65,7 @@ private:
 	ofRectangle mainWindowROI;
 	ZedDepthGrabber zedDepth;
 	ZedHeightMap zedHeightMap;
-
+	PillarWarning pillarWarning;
+	bool pillarWarningStarted = false;
 
 };
